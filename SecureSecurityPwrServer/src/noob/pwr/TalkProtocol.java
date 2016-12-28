@@ -1,9 +1,14 @@
 package noob.pwr;
  
 public class TalkProtocol {
-    public String processInput(String theInput) {
-        String theOutput = theInput;
-       
-        return theOutput;
+	public String name;
+    public TalkResponse processInput(String theInput) {
+    	if(name == null)
+    	{
+    		name = theInput;
+    		return new TalkResponse(ResponseType.NameSet,null);
+    	}
+        return new TalkResponse(ResponseType.Talk,theInput);
     }
 }
+
