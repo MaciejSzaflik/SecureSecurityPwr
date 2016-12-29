@@ -22,6 +22,12 @@ public class ChatClient {
     
     public void StartConnection(String[] args)
     {
+    	if(mainThread!= null && mainThread.isAlive())
+    	{
+    		System.out.println("Alredy connected!");
+    		return;
+    	}
+    	
         if (args.length != 2) {
             System.err.println(
                 "Usage: java EchoClient <host name> <port number>");

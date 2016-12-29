@@ -23,6 +23,7 @@ public class ConnectionKeeper {
 		{
 			openConnections.put(user, thread);
 		}
+		AdminPanel.getInstance().SetCurrentConnections(openConnections);
 	}
 	
 	public void InformUser(String seender, String user, String message)
@@ -36,5 +37,6 @@ public class ConnectionKeeper {
 	{
 		openConnections.entrySet().removeIf(entry->!entry.getValue().isAlive());
 		openConnections.forEach((u,t) -> t.InformClient(seender,message));
+		AdminPanel.getInstance().SetCurrentConnections(openConnections);
 	}
 }

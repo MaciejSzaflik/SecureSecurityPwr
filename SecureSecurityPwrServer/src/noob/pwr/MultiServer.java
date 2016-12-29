@@ -15,6 +15,7 @@ public class MultiServer {
         boolean listening = true;
         
         System.out.println("starting server at:" + portNumber);
+        AdminPanel.getInstance();
         
         try (ServerSocket serverSocket = new ServerSocket(portNumber)) { 
             while (listening) {

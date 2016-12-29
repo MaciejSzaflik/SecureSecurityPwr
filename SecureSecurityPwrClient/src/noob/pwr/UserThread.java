@@ -10,6 +10,7 @@ public class UserThread extends Thread {
 	
 	PrintWriter outputStream;
     BufferedReader inputBuffer;
+    public DiffieHellmanProtocol keyProtocol;
 	
 	public UserThread(String hostName, int port)
 	{
@@ -29,17 +30,35 @@ public class UserThread extends Thread {
 	
 	public void WriteMessage(String message)
 	{
+		outputStream.println(keyProtocol.cipher.Encrypt(message));
+	}
+	
+	public void ResponsePlain(String message)
+	{
 		outputStream.println(message);
 	}
 	
 	public void run() {
-		BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
         String fromServer;
-        String fromUser;
-
+        keyProtocol = new DiffieHellmanProtocol(false);
+        
         try {
 			while ((fromServer = inputBuffer.readLine()) != null) {
-			    System.out.println(fromServer);
+				String message = keyProtocol.ParseMessage(fromServer);
+				if(message!=null && !message.isEmpty())
+				{
+					if(!message.equals("end"))
+					{
+						System.out.println(message);
+						ResponsePlain(message);
+					}
+					else
+						System.out.println("Please send your name :)");
+				}
+				else if(keyProtocol.HaveFinished())
+				{
+					System.out.println(keyProtocol.cipher.Decrypt(fromServer));
+				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

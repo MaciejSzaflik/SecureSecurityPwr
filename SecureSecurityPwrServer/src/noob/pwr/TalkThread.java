@@ -1,6 +1,11 @@
 package noob.pwr;
 
 import java.net.*;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.Cipher;
+import javax.crypto.NoSuchPaddingException;
+
 import java.io.*;
 
 public class TalkThread extends Thread {
@@ -8,6 +13,7 @@ public class TalkThread extends Thread {
     private PrintWriter outWriter;
     private BufferedReader inputReader;
     private TalkProtocol talkProtocol;
+    private DiffieHellmanProtocol keyProtocol;
 
     public TalkThread(Socket socket) {
         super("MultiServerThread");
@@ -22,13 +28,22 @@ public class TalkThread extends Thread {
        
             String inputLine;
             talkProtocol = new TalkProtocol();
-            outWriter.println("Hello, please send your name :)");
+            keyProtocol = new DiffieHellmanProtocol(true);
+            outWriter.println(keyProtocol.ParseMessage(""));
             
             while ((inputLine = inputReader.readLine()) != null) {
             	System.out.println("cilent said: "+ inputLine);
-            	if(HandleResponse(talkProtocol.processInput(inputLine)))
+            	
+            	String keyProtR = keyProtocol.ParseMessage(inputLine);
+            	if(keyProtR!=null && !keyProtR.isEmpty())
             	{
-            		break;
+            		System.out.println("send to client " + keyProtR + keyProtocol.currentStep);
+            		outWriter.println(keyProtR);
+            	}
+            	else if(keyProtocol.HaveFinished())
+            	{
+            		inputLine = keyProtocol.cipher.Decrypt(inputLine);
+            		HandleResponse(talkProtocol.processInput(inputLine));
             	}
             }
             socket.close();
@@ -36,6 +51,9 @@ public class TalkThread extends Thread {
             e.printStackTrace();
         }
     }
+    
+    
+    
     
     private boolean HandleResponse(TalkResponse response)
     {
@@ -45,14 +63,14 @@ public class TalkThread extends Thread {
         }
     	else if(response.type == ResponseType.NameSet)
     	{
-    		outWriter.println("Name set for: " + talkProtocol.name);
     		ConnectionKeeper.getInstance().AddUser(talkProtocol.name, this);
+    		InformClient(talkProtocol.name,"Name set for: " + talkProtocol.name);
     	}
     	return false;
     }
     
     public void InformClient(String user, String message)
     {
-    	outWriter.println(user +": " + message);
+    	outWriter.println(keyProtocol.cipher.Encrypt(user +": " + message));
     }
 }

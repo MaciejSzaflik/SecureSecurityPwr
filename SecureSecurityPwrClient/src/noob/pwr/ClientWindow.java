@@ -12,6 +12,7 @@ import java.awt.Component;
 import java.awt.FlowLayout;
 import javax.swing.border.MatteBorder;
 import javax.swing.UIManager;
+import javax.swing.JScrollPane;
 
 public class ClientWindow extends JFrame {
 	
@@ -49,20 +50,25 @@ public class ClientWindow extends JFrame {
 		btnSend.setAlignmentY(0.0f);
 		btnSend.setBackground(Color.WHITE);
 		getContentPane().add(btnSend);
-		
-		mainChatText = new JTextArea();
-		mainChatText.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(227, 227, 227)));
-		mainChatText.setEditable(false);
-		mainChatText.setBounds(0, 0, 549, 167);
-		getContentPane().add(mainChatText);
 		setVisible(true);
-		
-		PrintStream printStream = new PrintStream(new AreaOutputStream(mainChatText));
 		
 		sendText = new JTextArea();
 		sendText.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(227, 227, 227)));
 		sendText.setBounds(0, 165, 549, 56);
 		getContentPane().add(sendText);
+		
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBorder(new MatteBorder(1, 1, 1, 1, (Color) Color.LIGHT_GRAY));
+		scrollPane.setOpaque(false);
+		scrollPane.setBounds(0, 11, 549, 156);
+		getContentPane().add(scrollPane);
+		
+		mainChatText = new JTextArea();
+		scrollPane.setViewportView(mainChatText);
+		mainChatText.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(227, 227, 227)));
+		mainChatText.setEditable(false);
+		
+		PrintStream printStream = new PrintStream(new AreaOutputStream(mainChatText));
 		System.setOut(printStream);
 		System.setErr(printStream);
 	
