@@ -43,6 +43,7 @@ public class TalkThread extends Thread {
             	else if(keyProtocol.HaveFinished())
             	{
             		inputLine = keyProtocol.cipher.Decrypt(inputLine);
+            		System.out.println("decrypt: "+ inputLine);
             		HandleResponse(talkProtocol.processInput(inputLine));
             	}
             }
@@ -51,10 +52,7 @@ public class TalkThread extends Thread {
             e.printStackTrace();
         }
     }
-    
-    
-    
-    
+
     private boolean HandleResponse(TalkResponse response)
     {
     	if(response.type == ResponseType.Talk)
@@ -64,13 +62,21 @@ public class TalkThread extends Thread {
     	else if(response.type == ResponseType.NameSet)
     	{
     		ConnectionKeeper.getInstance().AddUser(talkProtocol.name, this);
-    		InformClient(talkProtocol.name,"Name set for: " + talkProtocol.name);
+    		InformClient(talkProtocol.name,"passOk",true);
+    	}
+    	else if(response.type == ResponseType.PasswordInvalid)
+    	{
+    		InformClient(talkProtocol.name,"passInvalid",true);
     	}
     	return false;
     }
     
-    public void InformClient(String user, String message)
+    public void InformClient(String user, String message,boolean cleanMessage)
     {
-    	outWriter.println(keyProtocol.cipher.Encrypt(user +": " + message));
+    	System.out.println(user + " " + message);
+    	if(cleanMessage)
+    		outWriter.println(keyProtocol.cipher.Encrypt(message));
+    	else
+    		outWriter.println(keyProtocol.cipher.Encrypt(user +": " + message));
     }
 }

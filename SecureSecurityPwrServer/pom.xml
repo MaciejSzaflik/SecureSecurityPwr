@@ -5,11 +5,22 @@
   <version>0.0.1-SNAPSHOT</version>
   <name>PwrServer</name>
   <description>none none</description>
+  <repositories>
+    <repository>
+        <id>sonatype-snapshots</id>
+        <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </repository>
+  </repositories>
   <dependencies>
   <dependency>
     <groupId>com.sparkjava</groupId>
     <artifactId>spark-core</artifactId>
     <version>2.5.4</version>
+  </dependency>
+  <dependency>
+  	<groupId>org.mapdb</groupId>
+  	<artifactId>mapdb</artifactId>
+  	<version>3.0.2</version>
   </dependency>
   </dependencies>
   <build>

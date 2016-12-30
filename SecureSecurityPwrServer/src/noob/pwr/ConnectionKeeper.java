@@ -28,15 +28,16 @@ public class ConnectionKeeper {
 	
 	public void InformUser(String seender, String user, String message)
 	{
+		System.out.println("Inform:" + user +" " + message);
 		if(openConnections.containsKey(user))
 		{
-			openConnections.get(user).InformClient(seender, message);
+			openConnections.get(user).InformClient(seender, message,false);
 		}
 	}
 	public void BroadcastMessage(String seender,String message)
 	{
 		openConnections.entrySet().removeIf(entry->!entry.getValue().isAlive());
-		openConnections.forEach((u,t) -> t.InformClient(seender,message));
+		openConnections.forEach((u,t) -> t.InformClient(seender,message,false));
 		AdminPanel.getInstance().SetCurrentConnections(openConnections);
 	}
 }

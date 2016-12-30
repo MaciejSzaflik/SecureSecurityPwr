@@ -25,17 +25,7 @@ public class ClientWindow extends JFrame {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setSize(565,300);
 		
-		JButton btnNewButton = new JButton("Connect");
-		btnNewButton.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(227, 227, 227)));
-		btnNewButton.setBounds(0, 216, 272, 45);
-		btnNewButton.setBackground(Color.WHITE);
-		btnNewButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				ChatClient.instance.StartConnection(new String[]{"localhost","5000"});
-			}
-		});
 		getContentPane().setLayout(null);
-		getContentPane().add(btnNewButton);
 		
 		JButton btnSend = new JButton("Send");
 		btnSend.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(227, 227, 227)));
@@ -45,7 +35,7 @@ public class ClientWindow extends JFrame {
 				sendText.setText("");
 			}
 		});
-		btnSend.setBounds(271, 216, 278, 45);
+		btnSend.setBounds(0, 216, 549, 45);
 		btnSend.setAlignmentX(Component.RIGHT_ALIGNMENT);
 		btnSend.setAlignmentY(0.0f);
 		btnSend.setBackground(Color.WHITE);

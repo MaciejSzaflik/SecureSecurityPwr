@@ -6,6 +6,7 @@ public class ChatClient {
 	
 	private String[] args;
 	public static ChatClient instance;
+	public static LoginWindow loginWindow;
 	public static ClientWindow windowInstance;
 	private UserThread mainThread;
 	
@@ -17,10 +18,14 @@ public class ChatClient {
 	
     public static void main(String[] args) throws IOException {
     	ChatClient.instance = new ChatClient(args);
+    	ChatClient.loginWindow = new LoginWindow();
+    	ChatClient.loginWindow.setVisible(true);
     	ChatClient.windowInstance = new ClientWindow();
+    	ChatClient.windowInstance.setVisible(false);
+    	ChatClient.instance.StartConnection();
     }
     
-    public void StartConnection(String[] args)
+    public void StartConnection()
     {
     	if(mainThread!= null && mainThread.isAlive())
     	{

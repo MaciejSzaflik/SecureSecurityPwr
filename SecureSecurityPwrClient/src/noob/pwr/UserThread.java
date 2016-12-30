@@ -1,16 +1,19 @@
 package noob.pwr;
 
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class UserThread extends Thread {
 	
 	PrintWriter outputStream;
     BufferedReader inputBuffer;
     public DiffieHellmanProtocol keyProtocol;
+    private boolean passwordVerified = false;
 	
 	public UserThread(String hostName, int port)
 	{
@@ -49,19 +52,41 @@ public class UserThread extends Thread {
 				{
 					if(!message.equals("end"))
 					{
-						System.out.println(message);
 						ResponsePlain(message);
+						ChatClient.loginWindow.lblStatus.setText("Trying to connect..");
+						ChatClient.loginWindow.lblStatus.setForeground(Color.RED);
 					}
 					else
-						System.out.println("Please send your name :)");
+					{
+						ChatClient.loginWindow.lblStatus.setText("Connected");
+						ChatClient.loginWindow.lblStatus.setForeground(Color.GREEN);
+					}
 				}
-				else if(keyProtocol.HaveFinished())
+				else if(message.isEmpty())
 				{
-					System.out.println(keyProtocol.cipher.Decrypt(fromServer));
+					if(!passwordVerified)
+					{
+						String realMessage = keyProtocol.cipher.Decrypt(fromServer);
+						if(realMessage.equals("passOk"))
+						{
+							passwordVerified = true;
+							ChatClient.loginWindow.setVisible(false);
+							ChatClient.windowInstance.setVisible(true);
+						}
+						else{
+							ChatClient.loginWindow.lblStatus.setText("Bad pass");
+							ChatClient.loginWindow.lblStatus.setForeground(Color.RED);
+						}
+							
+					}
+					else
+						System.out.println(keyProtocol.cipher.Decrypt(fromServer));
 				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			ChatClient.loginWindow.lblStatus.setText("Error need connect again");
+			ChatClient.loginWindow.lblStatus.setForeground(Color.RED);
 			e.printStackTrace();
 		}
         System.out.println("end thread");
