@@ -1,6 +1,8 @@
 package noob.pwr;
 
 import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 public class ConnectionKeeper {
 	private static ConnectionKeeper instance;
@@ -26,9 +28,19 @@ public class ConnectionKeeper {
 		AdminPanel.getInstance().SetCurrentConnections(openConnections);
 	}
 	
+	public String GetUsersNames()
+	{
+		StringBuilder sb = new StringBuilder();
+		for(Entry<String, TalkThread> entry : openConnections.entrySet())
+		{
+			sb.append(entry.getKey());
+			sb.append(";");
+		}
+		return sb.toString();
+	}
+	
 	public void InformUser(String seender, String user, String message)
 	{
-		System.out.println("Inform:" + user +" " + message);
 		if(openConnections.containsKey(user))
 		{
 			openConnections.get(user).InformClient(seender, message,false);

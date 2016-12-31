@@ -60,7 +60,5 @@ public class ClientWindow extends JFrame {
 		
 		PrintStream printStream = new PrintStream(new AreaOutputStream(mainChatText));
 		System.setOut(printStream);
-		System.setErr(printStream);
-	
 	}
 }

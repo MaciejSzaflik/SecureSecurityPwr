@@ -70,8 +70,7 @@ public class UserThread extends Thread {
 						if(realMessage.equals("passOk"))
 						{
 							passwordVerified = true;
-							ChatClient.loginWindow.setVisible(false);
-							ChatClient.windowInstance.setVisible(true);
+							ChatClient.SetVisibleList();
 						}
 						else{
 							ChatClient.loginWindow.lblStatus.setText("Bad pass");
@@ -79,14 +78,18 @@ public class UserThread extends Thread {
 						}
 							
 					}
-					else
+					else if(ChatClient.state == ChatClient.State.Chat)
 						System.out.println(keyProtocol.cipher.Decrypt(fromServer));
+					else if(ChatClient.state == ChatClient.State.List)
+						ChatClient.listOfUsers.SetUsers(keyProtocol.cipher.Decrypt(fromServer));
 				}
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			ChatClient.loginWindow.lblStatus.setText("Error need connect again");
 			ChatClient.loginWindow.lblStatus.setForeground(Color.RED);
+			passwordVerified = false;
+			ChatClient.SetVisibleLogin();
 			e.printStackTrace();
 		}
         System.out.println("end thread");

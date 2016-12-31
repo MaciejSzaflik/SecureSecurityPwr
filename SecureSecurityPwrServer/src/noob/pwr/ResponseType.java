@@ -4,5 +4,6 @@ public enum ResponseType
 {
 	NameSet,
 	PasswordInvalid,
-	Talk
+	Talk,
+	GetUsers
 }

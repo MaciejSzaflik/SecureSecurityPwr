@@ -32,8 +32,6 @@ public class TalkThread extends Thread {
             outWriter.println(keyProtocol.ParseMessage(""));
             
             while ((inputLine = inputReader.readLine()) != null) {
-            	System.out.println("cilent said: "+ inputLine);
-            	
             	String keyProtR = keyProtocol.ParseMessage(inputLine);
             	if(keyProtR!=null && !keyProtR.isEmpty())
             	{
@@ -43,7 +41,6 @@ public class TalkThread extends Thread {
             	else if(keyProtocol.HaveFinished())
             	{
             		inputLine = keyProtocol.cipher.Decrypt(inputLine);
-            		System.out.println("decrypt: "+ inputLine);
             		HandleResponse(talkProtocol.processInput(inputLine));
             	}
             }
@@ -68,14 +65,19 @@ public class TalkThread extends Thread {
     	{
     		InformClient(talkProtocol.name,"passInvalid",true);
     	}
+    	else if(response.type == ResponseType.GetUsers)
+    	{
+    		InformClient(talkProtocol.name,response.message,true);
+    	}
     	return false;
     }
     
     public void InformClient(String user, String message,boolean cleanMessage)
     {
-    	System.out.println(user + " " + message);
     	if(cleanMessage)
+    	{
     		outWriter.println(keyProtocol.cipher.Encrypt(message));
+    	}
     	else
     		outWriter.println(keyProtocol.cipher.Encrypt(user +": " + message));
     }

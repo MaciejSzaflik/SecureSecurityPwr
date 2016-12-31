@@ -4,7 +4,11 @@ public class TalkProtocol {
 	public String name;
 	public String password;
     public TalkResponse processInput(String theInput) {
-    	if(name == null)
+    	if(theInput.equals("REQUEST:USERS"))
+    	{
+    		return new TalkResponse(ResponseType.GetUsers,ConnectionKeeper.getInstance().GetUsersNames());
+    	}
+    	else if(name == null)
     	{
     		String[] nameAndPass = theInput.split(";");
     		if(CheckPassword(nameAndPass[0],nameAndPass[1]))
