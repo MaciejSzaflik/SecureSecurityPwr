@@ -38,11 +38,12 @@ public class ListOfUsers extends JFrame {
 		getContentPane().add(scrollPane);
 		
 		DefaultTableModel dm = new DefaultTableModel();
-	    dm.setDataVector(new Object[][] {}, new Object[] { "Users" });
+	    dm.setDataVector(new Object[][] { { "button 1", "foo" },
+	        { "button 2", "bar" } }, new Object[] { "Button","String" });
 
 	    table = new JTable(dm);
-	    table.getColumn("Users").setCellRenderer(new ButtonRenderer());
-	    table.getColumn("Users").setCellEditor(
+	    table.getColumn("Button").setCellRenderer(new ButtonRenderer());
+	    table.getColumn("Button").setCellEditor(
 	        new ButtonEditor(new JCheckBox()));
 		scrollPane.setViewportView(table);
 	}
@@ -51,11 +52,13 @@ public class ListOfUsers extends JFrame {
 	{
 		String[] split = usersNames.split(";");
 		Object[][] toSet = new Object[split.length][1];
-		System.err.println(split.length);
 		for(int i = 0;i<split.length;i++)
 			toSet[i] = new Object[]{split[i]};
 		
-		((DefaultTableModel) table.getModel()).setDataVector(toSet, new Object[] { "Users" });
+		((DefaultTableModel) table.getModel()).setDataVector(toSet, new Object[] { "Users"});
+		table.getColumn("Users").setCellRenderer(new ButtonRenderer());
+	    table.getColumn("Users").setCellEditor(
+	        new ButtonEditor(new JCheckBox()));
 		((DefaultTableModel) table.getModel()).fireTableDataChanged();
 	}
 	
