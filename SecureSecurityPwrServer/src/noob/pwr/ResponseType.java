@@ -5,5 +5,7 @@ public enum ResponseType
 	NameSet,
 	PasswordInvalid,
 	Talk,
-	GetUsers
+	Whisper,
+	GetUsers,
+	Invalid
 }

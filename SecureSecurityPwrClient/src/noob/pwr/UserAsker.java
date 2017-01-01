@@ -6,7 +6,7 @@ public class UserAsker extends Thread {
 	public void run() {
 		while(askForUsers)
 		{
-			ChatClient.instance.WriteMessage("REQUEST:USERS");
+			ChatClient.instance.WriteMessage(ComConst.USERS,ComConst.EMPTY,ComConst.EMPTY);
 			try {
 				Thread.sleep(1000);
 			} catch (InterruptedException e) {

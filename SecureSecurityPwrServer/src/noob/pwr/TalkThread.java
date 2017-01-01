@@ -56,29 +56,34 @@ public class TalkThread extends Thread {
     	{
     		ConnectionKeeper.getInstance().BroadcastMessage(talkProtocol.name, response.message);
         }
+    	if(response.type == ResponseType.Whisper)
+    	{
+    		ConnectionKeeper.getInstance().InformUser(talkProtocol.name, response.reciver, response.message);
+        }
     	else if(response.type == ResponseType.NameSet)
     	{
     		ConnectionKeeper.getInstance().AddUser(talkProtocol.name, this);
-    		InformClient(talkProtocol.name,"passOk",true);
+    		InformClient(ComConst.PASS_AND_NICK,"passOk",ComConst.EMPTY);
     	}
     	else if(response.type == ResponseType.PasswordInvalid)
     	{
-    		InformClient(talkProtocol.name,"passInvalid",true);
+    		InformClient(ComConst.PASS_AND_NICK,"passInvalid",ComConst.EMPTY);
     	}
     	else if(response.type == ResponseType.GetUsers)
     	{
-    		InformClient(talkProtocol.name,response.message,true);
+    		InformClient(ComConst.USERS,response.message,ComConst.EMPTY);
     	}
     	return false;
     }
     
-    public void InformClient(String user, String message,boolean cleanMessage)
+    public void InformClient(String prefix, String values, String message)
     {
-    	if(cleanMessage)
-    	{
-    		outWriter.println(keyProtocol.cipher.Encrypt(message));
-    	}
-    	else
-    		outWriter.println(keyProtocol.cipher.Encrypt(user +": " + message));
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(prefix);
+    	sb.append(";");
+    	sb.append(values);
+    	sb.append(";");
+    	sb.append(message);
+    	outWriter.println(keyProtocol.cipher.Encrypt(sb.toString()));
     }
 }

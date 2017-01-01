@@ -32,10 +32,11 @@ public class LoginWindow extends JFrame {
 				if(!loginField.getText().isEmpty() && !passwordField.getText().isEmpty())
 				{
 					try {
-						String message = loginField.getText() + ";";
+						ChatClient.instance.myNick = loginField.getText();
+						String message = loginField.getText() + ":";
 						MessageDigest sha = MessageDigest.getInstance("SHA-1");
 						String password = new String(sha.digest(passwordField.getText().getBytes()));
-						ChatClient.instance.WriteMessage(message+password);
+						ChatClient.instance.WriteMessage(ComConst.PASS_AND_NICK, message+password,ComConst.EMPTY);
 					} catch (NoSuchAlgorithmException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();

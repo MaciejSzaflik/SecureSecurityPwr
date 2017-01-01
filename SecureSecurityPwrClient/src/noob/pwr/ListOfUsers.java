@@ -15,22 +15,25 @@ import javax.swing.JCheckBox;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.JLabel;
+import java.awt.Font;
 
 public class ListOfUsers extends JFrame {
 	private JTable table;
+	public JLabel nameLabel;
 	public ListOfUsers() {
 		getContentPane().setBackground(Color.WHITE);
 		getContentPane().setLayout(null);
 		this.setSize(365,500);
-		
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JButton btnMain = new JButton("Main");
 		btnMain.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				ChatClient.SetVisibleChat();
+				ChatClient.instance.SetVisibleChat("broadcast");
 			}
 		});
 		btnMain.setBackground(Color.WHITE);
-		btnMain.setBounds(0, 0, 349, 52);
+		btnMain.setBounds(0, 29, 349, 23);
 		getContentPane().add(btnMain);
 		
 		JScrollPane scrollPane = new JScrollPane();
@@ -46,11 +49,16 @@ public class ListOfUsers extends JFrame {
 	    table.getColumn("Button").setCellEditor(
 	        new ButtonEditor(new JCheckBox()));
 		scrollPane.setViewportView(table);
+		
+		nameLabel = new JLabel("New label");
+		nameLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		nameLabel.setBounds(10, 4, 185, 23);
+		getContentPane().add(nameLabel);
 	}
 	
 	public void SetUsers(String usersNames)
 	{
-		String[] split = usersNames.split(";");
+		String[] split = usersNames.split(":");
 		Object[][] toSet = new Object[split.length][1];
 		for(int i = 0;i<split.length;i++)
 			toSet[i] = new Object[]{split[i]};
@@ -107,7 +115,7 @@ public class ListOfUsers extends JFrame {
 		    if (isPushed) {
 		      // 
 		      // 
-		    	ChatClient.SetVisibleChat();
+		    	ChatClient.instance.SetVisibleChat(label);
 		      // System.out.println(label + ": Ouch!");
 		    }
 		    isPushed = false;

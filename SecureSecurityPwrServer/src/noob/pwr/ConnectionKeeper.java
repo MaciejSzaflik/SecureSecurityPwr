@@ -34,22 +34,22 @@ public class ConnectionKeeper {
 		for(Entry<String, TalkThread> entry : openConnections.entrySet())
 		{
 			sb.append(entry.getKey());
-			sb.append(";");
+			sb.append(":");
 		}
 		return sb.toString();
 	}
 	
-	public void InformUser(String seender, String user, String message)
+	public void InformUser(String seender, String reciver, String message)
 	{
-		if(openConnections.containsKey(user))
+		if(openConnections.containsKey(reciver))
 		{
-			openConnections.get(user).InformClient(seender, message,false);
+			openConnections.get(reciver).InformClient(ComConst.WHISPER,seender,message);
 		}
 	}
 	public void BroadcastMessage(String seender,String message)
 	{
 		openConnections.entrySet().removeIf(entry->!entry.getValue().isAlive());
-		openConnections.forEach((u,t) -> t.InformClient(seender,message,false));
+		openConnections.forEach((u,t) -> t.InformClient(ComConst.BROADCAST,seender,message));
 		AdminPanel.getInstance().SetCurrentConnections(openConnections);
 	}
 }

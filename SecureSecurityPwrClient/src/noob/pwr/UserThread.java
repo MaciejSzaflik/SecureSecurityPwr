@@ -31,16 +31,6 @@ public class UserThread extends Thread {
 		}
 	}
 	
-	public void WriteMessage(String message)
-	{
-		outputStream.println(keyProtocol.cipher.Encrypt(message));
-	}
-	
-	public void ResponsePlain(String message)
-	{
-		outputStream.println(message);
-	}
-	
 	public void run() {
         String fromServer;
         keyProtocol = new DiffieHellmanProtocol(false);
@@ -50,48 +40,79 @@ public class UserThread extends Thread {
 				String message = keyProtocol.ParseMessage(fromServer);
 				if(message!=null && !message.isEmpty())
 				{
-					if(!message.equals("end"))
-					{
-						ResponsePlain(message);
-						ChatClient.loginWindow.lblStatus.setText("Trying to connect..");
-						ChatClient.loginWindow.lblStatus.setForeground(Color.RED);
-					}
-					else
-					{
-						ChatClient.loginWindow.lblStatus.setText("Connected");
-						ChatClient.loginWindow.lblStatus.setForeground(Color.GREEN);
-					}
+					CheckStatusDiffeHellMan(message);
 				}
 				else if(message.isEmpty())
 				{
-					if(!passwordVerified)
-					{
-						String realMessage = keyProtocol.cipher.Decrypt(fromServer);
-						if(realMessage.equals("passOk"))
-						{
-							passwordVerified = true;
-							ChatClient.SetVisibleList();
-						}
-						else{
-							ChatClient.loginWindow.lblStatus.setText("Bad pass");
-							ChatClient.loginWindow.lblStatus.setForeground(Color.RED);
-						}
-							
-					}
-					else if(ChatClient.state == ChatClient.State.Chat)
-						System.out.println(keyProtocol.cipher.Decrypt(fromServer));
-					else if(ChatClient.state == ChatClient.State.List)
-						ChatClient.listOfUsers.SetUsers(keyProtocol.cipher.Decrypt(fromServer));
+					HandleTalkProtocolResponse(fromServer);
 				}
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			ChatClient.loginWindow.lblStatus.setText("Error need connect again");
-			ChatClient.loginWindow.lblStatus.setForeground(Color.RED);
-			passwordVerified = false;
-			ChatClient.SetVisibleLogin();
-			e.printStackTrace();
+			HandleException(e);
 		}
         System.out.println("end thread");
     }
+	
+	public void WriteMessage(String prefix,String values,String message)
+	{
+		outputStream.println(keyProtocol.cipher.Encrypt(prefix+ ";" + values + ";"+ message));
+	}
+	
+	public void ResponsePlain(String message)
+	{
+		outputStream.println(message);
+	}
+	
+	private void CheckStatusDiffeHellMan(String message)
+	{
+		if(!message.equals("end"))
+		{
+			ResponsePlain(message);
+			ChatClient.instance.loginWindow.lblStatus.setText("Trying to connect..");
+			ChatClient.instance.loginWindow.lblStatus.setForeground(Color.RED);
+		}
+		else
+		{
+			ChatClient.instance.loginWindow.lblStatus.setText("Connected");
+			ChatClient.instance.loginWindow.lblStatus.setForeground(Color.GREEN);
+		}
+	}
+	
+	private void HandleException(Exception e)
+	{
+		ChatClient.instance.loginWindow.lblStatus.setText("Error need connect again");
+		ChatClient.instance.loginWindow.lblStatus.setForeground(Color.RED);
+		passwordVerified = false;
+		ChatClient.instance.SetVisibleLogin();
+		e.printStackTrace();
+	}
+	
+	private void HandleTalkProtocolResponse(String fromServer)
+	{
+		String realMessage = keyProtocol.cipher.Decrypt(fromServer);
+		String[] input = realMessage.split(";");
+    	String option = input[0];
+    	String values = input[1];
+    	String message = input[2];
+		
+		if(!passwordVerified && option.equals(ComConst.PASS_AND_NICK))
+		{
+			if(values.equals("passOk"))
+			{
+				passwordVerified = true;
+				ChatClient.instance.SetVisibleList();
+			}
+			else{
+				ChatClient.instance.loginWindow.lblStatus.setText("Bad pass");
+				ChatClient.instance.loginWindow.lblStatus.setForeground(Color.RED);
+			}
+		}
+		else if(ChatClient.instance.state != ChatClient.State.Login && option.equals(ComConst.BROADCAST))
+			ChatClient.instance.WriteToChat("broadcast", values+ ": " + message);
+		else if(ChatClient.instance.state != ChatClient.State.Login && option.equals(ComConst.WHISPER))
+			ChatClient.instance.WriteToChat(values, values+ ": " +message);
+		else if(ChatClient.instance.state == ChatClient.State.List && option.equals(ComConst.USERS))
+			ChatClient.instance.listOfUsers.SetUsers(values);
+	}
+	
 }
