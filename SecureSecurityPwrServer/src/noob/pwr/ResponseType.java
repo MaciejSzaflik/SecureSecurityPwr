@@ -7,5 +7,6 @@ public enum ResponseType
 	Talk,
 	Whisper,
 	GetUsers,
+	History,
 	Invalid
 }

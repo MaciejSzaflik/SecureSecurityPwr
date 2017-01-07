@@ -1,9 +1,12 @@
 package noob.pwr;
 
 import java.net.*;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import java.io.*;
@@ -14,10 +17,19 @@ public class TalkThread extends Thread {
     private BufferedReader inputReader;
     private TalkProtocol talkProtocol;
     private DiffieHellmanProtocol keyProtocol;
-
+    private MessageDigest sha;
+	
+    	
     public TalkThread(Socket socket) {
         super("MultiServerThread");
         this.socket = socket;
+        
+		try {
+			sha = MessageDigest.getInstance("SHA-1");
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
     
     public void run() {
@@ -46,8 +58,13 @@ public class TalkThread extends Thread {
             }
             socket.close();
         } catch (IOException e) {
-            e.printStackTrace();
-        }
+        	
+        	ConnectionKeeper.getInstance().RemoveUser(talkProtocol.name);
+            System.out.println("Ended conncetion");
+        } catch (IllegalBlockSizeException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     private boolean HandleResponse(TalkResponse response)
@@ -59,6 +76,7 @@ public class TalkThread extends Thread {
     	if(response.type == ResponseType.Whisper)
     	{
     		ConnectionKeeper.getInstance().InformUser(talkProtocol.name, response.reciver, response.message);
+    		RecordInformation(talkProtocol.name, response.reciver, response.message);
         }
     	else if(response.type == ResponseType.NameSet)
     	{
@@ -73,7 +91,51 @@ public class TalkThread extends Thread {
     	{
     		InformClient(ComConst.USERS,response.message,ComConst.EMPTY);
     	}
+    	else if(response.type == ResponseType.History)
+    	{
+    		String histVal = PrepareWholeHistory(talkProtocol.name,response.reciver);
+    		System.out.println("asked for hist: " + histVal);
+    		if(histVal != null)
+    			InformClient(ComConst.HISTORY,histVal,ComConst.EMPTY);
+    		else
+    			InformClient(ComConst.HISTORY,ComConst.EMPTY,ComConst.EMPTY);
+    	}
     	return false;
+    }
+    
+    
+    public String PrepareWholeHistory(String reader,String withWho)
+    {
+    	List<String> values = ReadWholeHistory(reader,withWho);
+    	StringBuilder sb = new StringBuilder();
+    	if(values == null || values.size() == 0)
+    		return null;
+    	for(int i = 0;i<values.size();i++)
+    	{
+    		sb.append(keyProtocol.cipher.Encrypt(values.get(i)));
+    		sb.append(":");
+    	}
+		return sb.toString();
+    }
+    
+    public List<String> ReadWholeHistory(String reader,String withWho)
+    {
+    	return SimpleDataBase.getInstance().GetWholeMap(getNamesSorted(reader, withWho));
+    }
+    
+    public void RecordInformation(String sender, String reciver, String message)
+    {
+    	SimpleDataBase.getInstance().PutToMap(getNamesSorted(sender, reciver), Utilities.GetTimeStamp(),sender+": "+message);
+    }
+    
+    private String getNamesSorted(String alice, String bob)
+    {
+    	byte[] digest = null;
+    	if(alice.compareTo(bob) > 0)
+    		digest = sha.digest((alice + bob).getBytes());
+    	else
+    		digest = sha.digest((bob + alice).getBytes());
+    	return new String(digest);
     }
     
     public void InformClient(String prefix, String values, String message)

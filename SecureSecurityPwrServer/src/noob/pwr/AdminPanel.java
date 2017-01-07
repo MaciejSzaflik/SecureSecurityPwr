@@ -37,7 +37,7 @@ public class AdminPanel extends JFrame {
 	public void SetCurrentConnections(HashMap<String,TalkThread> connections)
 	{
 		StringBuilder stringBuilder = new StringBuilder();
-		connections.forEach((k,v) ->  stringBuilder.append(k + " " + (v.isAlive()?"Alive":"Dead")));
+		connections.forEach((k,v) ->  stringBuilder.append(k + " " + (v.isAlive()?"Alive":"Dead")+ "\n"));
 		textArea.setText(stringBuilder.toString());
 	}
 }

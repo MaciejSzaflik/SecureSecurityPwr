@@ -4,6 +4,7 @@ public class TalkProtocol {
 	
 	public String name;
 	public String password;
+	
     public TalkResponse processInput(String theInput) {
     	
     	String[] input = theInput.split(";");
@@ -11,7 +12,7 @@ public class TalkProtocol {
     	String values = input[1];
     	String message = input[2];
     	ResponseType parsedOption = optionToResponseType(option);
-
+    	//System.out.println(option + " " + values + " " + message); 
     	if(password == null && parsedOption == ResponseType.PasswordInvalid)
     	{
     		return ResponseForPasswordCheck(values);
@@ -28,6 +29,10 @@ public class TalkProtocol {
     	{
     		return new TalkResponse(ResponseType.Talk,message,null);
     	}
+    	else if(parsedOption == ResponseType.History)
+    	{
+    		return new TalkResponse(ResponseType.History,null,values);
+    	}
     	return new TalkResponse(ResponseType.Invalid,theInput,null);
     }
     
@@ -43,6 +48,8 @@ public class TalkProtocol {
     		return ResponseType.Whisper;
     	case ComConst.BROADCAST:
     		return ResponseType.Talk;
+    	case ComConst.HISTORY:
+    		return ResponseType.History;
 		default:
     		return ResponseType.Invalid;
     	}

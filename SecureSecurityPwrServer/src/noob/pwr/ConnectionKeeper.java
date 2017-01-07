@@ -19,6 +19,15 @@ public class ConnectionKeeper {
 		openConnections = new HashMap<String,TalkThread>();
 	}
 	
+	public void RemoveUser(String user)
+	{
+		if(openConnections.containsKey(user))
+		{
+			openConnections.remove(user);
+		}
+		AdminPanel.getInstance().SetCurrentConnections(openConnections);
+	}
+	
 	public void AddUser(String user, TalkThread thread)
 	{
 		if(!openConnections.containsKey(user))
