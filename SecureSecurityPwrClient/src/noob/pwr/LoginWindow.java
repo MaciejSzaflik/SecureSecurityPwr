@@ -11,6 +11,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.SystemColor;
 import javax.swing.JLabel;
+import javax.swing.JPasswordField;
+
 import java.awt.event.ActionListener;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -18,7 +20,7 @@ import java.awt.event.ActionEvent;
 
 public class LoginWindow extends JFrame {
 	public JTextField loginField;
-	public JTextField passwordField;
+	public JPasswordField passwordField;
 	public JLabel lblStatus;
 	public LoginWindow() {
 		getContentPane().setBackground(Color.WHITE);
@@ -58,7 +60,7 @@ public class LoginWindow extends JFrame {
 		getContentPane().add(loginField);
 		loginField.setColumns(10);
 		
-		passwordField = new JTextField();
+		passwordField = new JPasswordField();
 		passwordField.setBackground(SystemColor.inactiveCaptionBorder);
 		passwordField.setFont(new Font("Tahoma", Font.PLAIN, 25));
 		passwordField.setColumns(10);

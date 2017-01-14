@@ -41,13 +41,10 @@ public class ListOfUsers extends JFrame {
 		getContentPane().add(scrollPane);
 		
 		DefaultTableModel dm = new DefaultTableModel();
-	    dm.setDataVector(new Object[][] { { "button 1", "foo" },
-	        { "button 2", "bar" } }, new Object[] { "Button","String" });
+	    dm.setDataVector(new Object[][] { {  },
+	        { } }, new Object[] { });
 
 	    table = new JTable(dm);
-	    table.getColumn("Button").setCellRenderer(new ButtonRenderer());
-	    table.getColumn("Button").setCellEditor(
-	        new ButtonEditor(new JCheckBox()));
 		scrollPane.setViewportView(table);
 		
 		nameLabel = new JLabel("New label");
@@ -59,14 +56,22 @@ public class ListOfUsers extends JFrame {
 	public void SetUsers(String usersNames)
 	{
 		String[] split = usersNames.split(":");
-		Object[][] toSet = new Object[split.length][1];
-		for(int i = 0;i<split.length;i++)
-			toSet[i] = new Object[]{split[i]};
+		Object[][] toSet = new Object[split.length][2];
 		
-		((DefaultTableModel) table.getModel()).setDataVector(toSet, new Object[] { "Users"});
+		for(int i = 0;i<split.length;i++)
+		{
+			toSet[i] = new Object[]{split[i],split[i] + ": History"};
+		}
+		
+		((DefaultTableModel) table.getModel()).setDataVector(toSet, new Object[] { "Users","Hist"});
 		table.getColumn("Users").setCellRenderer(new ButtonRenderer());
 	    table.getColumn("Users").setCellEditor(
 	        new ButtonEditor(new JCheckBox()));
+		((DefaultTableModel) table.getModel()).fireTableDataChanged();
+		
+		table.getColumn("Hist").setCellRenderer(new ButtonRenderer());
+	    table.getColumn("Hist").setCellEditor(
+	        new HistoryButton(new JCheckBox()));
 		((DefaultTableModel) table.getModel()).fireTableDataChanged();
 	}
 	
@@ -83,13 +88,30 @@ public class ListOfUsers extends JFrame {
 		    return this;
 		  }
 		}
+		class HistoryButton extends ButtonEditor {
 
+			public HistoryButton(JCheckBox checkBox) {
+				super(checkBox);
+				// TODO Auto-generated constructor stub
+			}
+			
+		    public Object getCellEditorValue() {
+			    if (isPushed) {	
+			    	String[] value = label.split(":");
+			    	ChatClient.instance.WriteMessage(ComConst.HISTORY,value[0],ComConst.EMPTY);
+			    }
+			    isPushed = false;
+			    return new String(label);
+			  }
+		
+		}
+		
 		class ButtonEditor extends DefaultCellEditor {
 		  protected JButton button;
 
-		  private String label;
+		  protected String label;
 
-		  private boolean isPushed;
+		  protected boolean isPushed;
 
 		  public ButtonEditor(JCheckBox checkBox) {
 		    super(checkBox);
@@ -112,11 +134,8 @@ public class ListOfUsers extends JFrame {
 		  }
 
 		  public Object getCellEditorValue() {
-		    if (isPushed) {
-		      // 
-		      // 
+		    if (isPushed) {	
 		    	ChatClient.instance.SetVisibleChat(label);
-		      // System.out.println(label + ": Ouch!");
 		    }
 		    isPushed = false;
 		    return new String(label);

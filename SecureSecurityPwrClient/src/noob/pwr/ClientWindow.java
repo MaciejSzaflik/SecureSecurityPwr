@@ -39,13 +39,14 @@ public class ClientWindow extends JFrame {
 		btnSend.setBorder(new MatteBorder(2, 2, 2, 2, (Color) new Color(227, 227, 227)));
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				AppendTextToMain(ChatClient.instance.myNick + ": " + sendText.getText());
+				
 				if(user.equals("broadcast"))
 				{
 					ChatClient.instance.WriteMessage(ComConst.BROADCAST,ComConst.EMPTY,sendText.getText());
 				}
 				else
 				{
+					AppendTextToMain(ChatClient.instance.myNick + ": " + sendText.getText());
 					ChatClient.instance.WriteMessage(ComConst.WHISPER,user,sendText.getText());
 				}	
 				sendText.setText("");

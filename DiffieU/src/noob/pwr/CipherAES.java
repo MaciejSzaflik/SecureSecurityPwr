@@ -34,13 +34,13 @@ public class CipherAES {
 		}
 	}
 	
-	public String Decrypt(String toDecrypt)
+	public String Decrypt(String toDecrypt) throws IllegalBlockSizeException
 	{
 		byte[] byteDecryptedText;
 		try {
 			byteDecryptedText = cipherDecrypt.doFinal(new BASE64Decoder().decodeBuffer(toDecrypt));
 	        return new String(byteDecryptedText);
-		} catch (IllegalBlockSizeException | BadPaddingException | IOException e) {
+		} catch ( BadPaddingException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} 
@@ -52,7 +52,7 @@ public class CipherAES {
 		byte[] byteCipherText;
 		try {
 			byteCipherText = cipherEncypt.doFinal(toEncrypt.getBytes());
-			return new BASE64Encoder().encode(byteCipherText);
+			return new BASE64Encoder().encode(byteCipherText).replaceAll("(?:\\r\\n|\\n\\r|\\n|\\r)", "");
 		} catch (IllegalBlockSizeException | BadPaddingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

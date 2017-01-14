@@ -79,6 +79,7 @@ public class DiffieHellmanProtocol {
 		default:
 			break;
 		}
+		System.out.println("Diffie: " + response);
 		return response;
 	}
 	

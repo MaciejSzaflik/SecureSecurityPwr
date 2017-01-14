@@ -8,6 +8,8 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.net.SocketException;
 
+import javax.crypto.IllegalBlockSizeException;
+
 public class UserThread extends Thread {
 	
 	PrintWriter outputStream;
@@ -55,6 +57,7 @@ public class UserThread extends Thread {
 	
 	public void WriteMessage(String prefix,String values,String message)
 	{
+		//System.out.println(prefix+ ";" + values + ";"+ message);
 		outputStream.println(keyProtocol.cipher.Encrypt(prefix+ ";" + values + ";"+ message));
 	}
 	
@@ -84,12 +87,22 @@ public class UserThread extends Thread {
 		ChatClient.instance.loginWindow.lblStatus.setForeground(Color.RED);
 		passwordVerified = false;
 		ChatClient.instance.SetVisibleLogin();
-		e.printStackTrace();
 	}
 	
 	private void HandleTalkProtocolResponse(String fromServer)
 	{
-		String realMessage = keyProtocol.cipher.Decrypt(fromServer);
+		String realMessage = "";
+		try{	
+			System.out.println("Encrypted: " + fromServer);
+			realMessage = keyProtocol.cipher.Decrypt(fromServer);
+			System.out.println("Decrypted: " + realMessage);
+		}
+		catch(javax.crypto.IllegalBlockSizeException exception)
+		{
+			System.out.println("something wrong with message:");
+			System.out.println(fromServer);
+			return;
+		}
 		String[] input = realMessage.split(";");
     	String option = input[0];
     	String values = input[1];
@@ -110,9 +123,31 @@ public class UserThread extends Thread {
 		else if(ChatClient.instance.state != ChatClient.State.Login && option.equals(ComConst.BROADCAST))
 			ChatClient.instance.WriteToChat("broadcast", values+ ": " + message);
 		else if(ChatClient.instance.state != ChatClient.State.Login && option.equals(ComConst.WHISPER))
-			ChatClient.instance.WriteToChat(values, values+ ": " +message);
+			ChatClient.instance.WriteToChat(values, values+ ": " + message);
 		else if(ChatClient.instance.state == ChatClient.State.List && option.equals(ComConst.USERS))
 			ChatClient.instance.listOfUsers.SetUsers(values);
+		else if(ChatClient.instance.state == ChatClient.State.List && option.equals(ComConst.HISTORY))
+		{
+			new HistoryWindow(ParseHistory(values));
+		}
+		
 	}
-	
+	private String[] ParseHistory(String codedInfo)
+	{
+		if(codedInfo.equals(ComConst.EMPTY))
+			return null;
+		
+		String[] info = codedInfo.split(":");
+
+		for(int i = 0;i<info.length;i++)
+		{
+			try {
+				info[i] = keyProtocol.cipher.Decrypt(info[i]);
+			} catch (IllegalBlockSizeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return info;
+	}
 }

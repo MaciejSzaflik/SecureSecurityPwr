@@ -52,7 +52,9 @@ public class TalkThread extends Thread {
             	}
             	else if(keyProtocol.HaveFinished())
             	{
+            		System.out.println("Encrypted: " + inputLine);
             		inputLine = keyProtocol.cipher.Decrypt(inputLine);
+            		System.out.println("Decrypted: " + inputLine);
             		HandleResponse(talkProtocol.processInput(inputLine));
             	}
             }
